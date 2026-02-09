@@ -1,0 +1,11 @@
+{
+  "name": "Piero Savastano",
+  "bio": "Hello I founded and maintain the Cheshire Cat AI project. Happy to see you here :)",
+  "avatar": "https://secure.gravatar.com/avatar/b06a780599c0462f4c93ae69d1545a7da9abd7144baf3d5650a5a8a2d8884828?s=256&d=mm&r=g",
+  "links": [
+    { "label": "Website", "url": "https://pieroit.org" },
+    { "label": "Instagram", "url": "https://www.instagram.com/piero.savastano/" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/piero-savastano-523b3016/" },
+    { "label": "YouTube", "url": "https://www.youtube.com/@PieroSavastano" }
+  ]
+}

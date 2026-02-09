@@ -1,0 +1,9 @@
+{
+  "name": "Nicola Corbellini",
+  "bio": "PostDoc Researcher at the InfoMus Lab, Casa Paganini, within the DIBRIS department of the University of Genoa. His research focuses on Social Signal Processing, with interests in Hybrid Intelligence and Multimodal Human-Computer Interaction. Beyond academia, Nicola works as a software developer and has a keen interest in interactive generative visual and new media art.",
+  "avatar": "https://secure.gravatar.com/avatar/f3067987d4af67fbd296355d9791a4123389c250b9d9f143637efc87d3a79cba?s=256&d=mm&r=g",
+  "links": [
+    { "label": "Website", "url": "https://nicola-corbellini.github.io/" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/nicola-corbellini-00780b1a9" }
+  ]
+}

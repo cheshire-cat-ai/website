@@ -1,0 +1,406 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import HeroJumbo from '../components/HeroJumbo';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+import bookImg from '../assets/home/book300.jpg';
+import apiImg from '../assets/home/finlay87-JGTRAeU3z7c-unsplash.jpg';
+import modelsImg from '../assets/home/main-qimg-3cc46e4ca8f234f7cc6f4aaccbe2e5f0a-pjlq.jpeg';
+import dockerImg from '../assets/home/didier-weemaels-ZKVBM2_Dp84-unsplash.jpg';
+import pluginImg from '../assets/home/puzzle300-1.jpg';
+import smartImg from '../assets/home/albert-einstein-sticks-out-his-tongue-when-asked-by-news-photo-1681316749.jpg';
+import adminScreenshot1 from '../assets/home/Screenshot-from-2024-08-22-17-02-52.png';
+import adminScreenshot2 from '../assets/home/Screenshot-from-2024-08-22-17-02-15.png';
+import adminScreenshot3 from '../assets/home/Screenshot-from-2024-08-22-17-00-14-1.png';
+import adminScreenshot4 from '../assets/home/Screenshot-from-2024-08-22-17-02-28.png';
+import pluginScreenshot from '../assets/home/Screenshot-from-2024-08-22-17-36-42.png';
+import communityImg from '../assets/home/Thank_you_cats.jpg';
+
+const recentPosts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			.features {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 2rem;
+				padding: 2rem 1rem;
+				max-width: 960px;
+				margin: 0 auto;
+			}
+			.feature {
+				text-align: center;
+			}
+			.feature img {
+				width: 100%;
+				max-width: 280px;
+				height: 180px;
+				object-fit: cover;
+				border-radius: 12px;
+				margin-bottom: 0.5rem;
+			}
+			.feature h4 {
+				margin: 0.5rem 0 0.25rem;
+			}
+			.feature p {
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			.section-title {
+				text-align: center;
+				padding: 2rem 1rem 1rem;
+			}
+			.dev-section {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 1rem;
+			}
+			.dev-block {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 2rem;
+				align-items: start;
+				margin-bottom: 3rem;
+			}
+			.dev-block.reverse {
+				direction: rtl;
+			}
+			.dev-block.reverse > * {
+				direction: ltr;
+			}
+			.dev-block h4 {
+				margin-top: 0;
+			}
+			.dev-block pre {
+				overflow-x: auto;
+				border-radius: 8px;
+			}
+			.dev-block img {
+				width: 100%;
+				border-radius: 8px;
+			}
+			.screenshots {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 0.5rem;
+			}
+			.screenshots img {
+				border-radius: 8px;
+				width: 100%;
+			}
+			.blog-preview {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+			}
+			.blog-preview ul {
+				list-style: none;
+				padding: 0;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 1.5rem;
+			}
+			.blog-preview a {
+				text-decoration: none;
+			}
+			.blog-preview h4 {
+				margin: 0.5rem 0 0.25rem;
+				color: rgb(var(--black));
+			}
+			.blog-preview .date {
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+			}
+			.blog-preview .thumbnail-container {
+				height: 180px;
+				border-radius: 8px;
+			}
+			.blog-preview .see-all {
+				text-align: center;
+				margin-top: 1.5rem;
+			}
+			.community {
+				text-align: center;
+				padding: 2rem 1rem;
+				max-width: 720px;
+				margin: 0 auto;
+			}
+			.community img {
+				width: 100%;
+				max-width: 500px;
+				border-radius: 12px;
+				margin-top: 1rem;
+			}
+			@media (max-width: 720px) {
+				.dev-block {
+					grid-template-columns: 1fr;
+				}
+				.dev-block.reverse {
+					direction: ltr;
+				}
+				.features {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<HeroJumbo client:visible />
+
+			<h2 class="section-title">Build your AI agent</h2>
+			<section class="features">
+				<div class="feature">
+					<Image src={bookImg} alt="Train with your docs" width={280} height={180} />
+					<h4>Train with your docs</h4>
+					<p>Upload pdf, txt, markdown, JSON, web pages.</p>
+				</div>
+				<div class="feature">
+					<Image src={apiImg} alt="Interact with the world" width={280} height={180} />
+					<h4>Interact with the world</h4>
+					<p>Easily connect your agent to external APIs and apps.</p>
+				</div>
+				<div class="feature">
+					<Image src={modelsImg} alt="Choose your models" width={280} height={180} />
+					<h4>Choose your models</h4>
+					<p>Use commercial or open LLMs and embedders.</p>
+				</div>
+				<div class="feature">
+					<Image src={dockerImg} alt="Plug & Play" width={280} height={180} />
+					<h4>Plug &amp; Play</h4>
+					<p>100% dockerized, with live reload.</p>
+				</div>
+				<div class="feature">
+					<Image src={pluginImg} alt="Easy to Extend" width={280} height={180} />
+					<h4>Easy to Extend</h4>
+					<p>One-click install plugins from the community registry, or write your own.</p>
+				</div>
+				<div class="feature">
+					<Image src={smartImg} alt="Smart dialogues" width={280} height={180} />
+					<h4>Smart dialogues</h4>
+					<p>Cutting edge conversational skills with hooks, tools (function calling) and forms.</p>
+				</div>
+			</section>
+
+			<h2 class="section-title">Developer experience</h2>
+			<section class="dev-section">
+				<div class="dev-block">
+					<div>
+						<pre><code>services:
+  cheshire-cat-core:
+    image: ghcr.io/cheshire-cat-ai/core:latest
+    container_name: cheshire_cat_core
+    ports:
+      - 1865:80
+    volumes:
+      - ./static:/app/cat/static
+      - ./plugins:/app/cat/plugins
+      - ./data:/app/cat/data</code></pre>
+					</div>
+					<div>
+						<h4>Docker based</h4>
+						<p>The Cat is a single <strong>container</strong>, to easily integrate in your architecture alongside:</p>
+						<ul>
+							<li>Reverse proxy (Caddy, Nginx)</li>
+							<li>Vector DB (Qdrant)</li>
+							<li>LLM runner (Ollama, vLLM)</li>
+							<li>Application (Django, WordPress)</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/quickstart/installation-configuration/">Learn more</a>
+					</div>
+				</div>
+
+				<div class="dev-block reverse">
+					<div>
+						<h4>Admin panel</h4>
+						<p><strong>Manage</strong> your installation with the admin panel, available at first launch.</p>
+						<ul>
+							<li>Chat with your agent with live reload at code changes</li>
+							<li>Install and activate/deactivate plugins</li>
+							<li>Visualize and manage memory contents</li>
+							<li>Configure LLM and embedder</li>
+							<li>Manage your users</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/quickstart/play-with-the-cat/">Learn more</a>
+					</div>
+					<div class="screenshots">
+						<Image src={adminScreenshot1} alt="Admin panel chat" width={460} height={300} />
+						<Image src={adminScreenshot2} alt="Admin panel plugins" width={460} height={300} />
+						<Image src={adminScreenshot3} alt="Admin panel memory" width={460} height={300} />
+						<Image src={adminScreenshot4} alt="Admin panel settings" width={460} height={300} />
+					</div>
+				</div>
+
+				<div class="dev-block">
+					<div>
+						<pre><code>// Meanwhile, in the browser...
+
+import {'{'} CatClient {'}'} from 'ccat-api'
+
+const cat = new CatClient({'{'}&nbsp;
+    baseUrl: 'localhost',
+    userId: 'user',
+    //... other settings
+{'}'})
+
+cat.send('Hello kitten!')</code></pre>
+					</div>
+					<div>
+						<h4>Extensive HTTP and WebSocket API</h4>
+						<p>Our framework is <strong>microservice first</strong>, the best scenario if you want to add a conversational layer to pre-existing software.</p>
+						<ul>
+							<li>Endpoints for LLM, embedder, vector memory, uploads, settings, users</li>
+							<li>Websocket chat with token streaming and notifications</li>
+							<li>Community built clients in most used languages</li>
+							<li>You can add endpoints via plugin</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/production/network/clients/">Learn more</a>
+					</div>
+				</div>
+
+				<div class="dev-block reverse">
+					<div>
+						<h4>A plugin is just a folder</h4>
+						<p>Focus on your agent, which is already online before you even start coding.</p>
+						<ul>
+							<li>Create a folder in <code>cat/plugins</code></li>
+							<li>Create a python file in the folder</li>
+							<li>Add hooks, tools and forms</li>
+							<li>Debug in the admin chat with live reload</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/plugins/plugins/">Learn more</a>
+					</div>
+					<div>
+						<Image src={pluginScreenshot} alt="Plugin structure" width={460} height={300} />
+					</div>
+				</div>
+
+				<div class="dev-block">
+					<div>
+						<pre><code>from cat.mad_hatter.decorators import hook
+
+@hook
+def agent_prompt_prefix(prefix, cat):
+    prefix = """You are Marvin the socks seller.
+You reply with exactly one rhyme.
+"""
+    return prefix</code></pre>
+					</div>
+					<div>
+						<h4>Hooks</h4>
+						<p>Customize your agent with <strong>event callbacks</strong>. Things you can do:</p>
+						<ul>
+							<li>Change the system prompt</li>
+							<li>Inspect/edit inbound and outbound messages</li>
+							<li>Fully customize the agent</li>
+							<li>Create pipelines for memory and uploads</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/plugins/hooks/">Learn more</a>
+					</div>
+				</div>
+
+				<div class="dev-block reverse">
+					<div>
+						<h4>Tools</h4>
+						<p>With tools, you can enable LLM <strong>function calling</strong>:</p>
+						<ul>
+							<li>Manage domotics</li>
+							<li>Call a REST API</li>
+							<li>Query a DB</li>
+							<li>Integrate with a symbolic reasoner</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/plugins/tools/">Learn more</a>
+					</div>
+					<div>
+						<pre><code>from cat.mad_hatter.decorators import tool
+
+@tool
+def socks_prices(color, cat):
+    """Get socks price. Input is the sock color."""
+    prices = {'{'}"black": 5, "white": 10, "pink": 50{'}'}
+    price = prices.get(color, 0)
+    return f"{'{'}price{'}'} bucks, meeeow!"</code></pre>
+					</div>
+				</div>
+
+				<div class="dev-block">
+					<div>
+						<pre><code>from pydantic import BaseModel
+from cat.experimental.form import form, CatForm
+
+class PizzaOrder(BaseModel):
+    pizza_type: str
+    phone: int
+
+@form
+class PizzaForm(CatForm):
+    description = "Pizza Order"
+    model_class = PizzaOrder
+    start_examples = ["I want pizza"]
+    stop_examples = ["not hungry anymore"]
+    ask_confirm = True
+
+    def submit(self, form_data):
+        return {'{'}"output": "Pizza order on its way"{'}'}</code></pre>
+					</div>
+					<div>
+						<h4>Forms</h4>
+						<p>Handle goal oriented <strong>multi turn conversations</strong>:</p>
+						<ul>
+							<li>Gather complex information on autopilot</li>
+							<li>Based on pydantic models (types and custom validation)</li>
+							<li>Ask for a final confirmation</li>
+							<li>Custom submit callback</li>
+						</ul>
+						<a href="https://cheshire-cat-ai.github.io/docs/plugins/forms/">Learn more</a>
+					</div>
+				</div>
+			</section>
+
+			<h2 class="section-title">Latest from Wonderland</h2>
+			<section class="blog-preview">
+				<ul>
+					{recentPosts.map((post) => (
+						<li>
+							<a href={`/${post.id}/`}>
+								{post.data.heroImage && (
+									<div class="thumbnail-container">
+										<Image width={360} height={180} src={post.data.heroImage} alt="" />
+									</div>
+								)}
+								<h4>{post.data.title}</h4>
+								<p class="date"><FormattedDate date={post.data.pubDate} /></p>
+							</a>
+						</li>
+					))}
+				</ul>
+				<div class="see-all">
+					<a href="/blog/">See all blog articles</a>
+				</div>
+			</section>
+
+			<section class="community">
+				<h3>Join us at the next Meow Event!</h3>
+				<p>
+					Our growing and active community is hosting many furrmidable <a href="/meow-events/">events</a> in the
+					<a href="https://discord.com/invite/bHX5sNFCYU">Discord server</a>.
+					Don't miss the chance to take part to the Cheshire Cat community and save the dates!
+				</p>
+				<Image src={communityImg} alt="Cheshire Cat community" width={500} height={300} />
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

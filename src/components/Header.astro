@@ -1,0 +1,120 @@
+---
+import { SITE_TITLE } from '../consts';
+import navigation from '../content/navigation.json';
+import MobileMenu from './MobileMenu';
+---
+
+<header>
+	<nav>
+		<h2><a href="/"><img src="/favicon.svg" alt="" class="site-logo" />{SITE_TITLE}</a></h2>
+		<div class="nav-links">
+			{navigation.items.map((item) =>
+				item.children ? (
+					<div class="dropdown">
+						<span class="dropdown-toggle">{item.label}</span>
+						<div class="dropdown-menu">
+							{item.children.map((child) => (
+								<a href={child.href} {...(child.external ? { target: '_blank' } : {})}>{child.label}</a>
+							))}
+						</div>
+					</div>
+				) : (
+					<a href={item.href}>{item.label}</a>
+				)
+			)}
+		</div>
+		<div class="social-links">
+			{navigation.social.map((link) => (
+				<a href={link.href} target="_blank">
+					<span class="sr-only">{link.label}</span>
+					<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
+						<path fill="currentColor" d={link.icon} />
+					</svg>
+				</a>
+			))}
+		</div>
+		<MobileMenu client:load />
+	</nav>
+</header>
+<style>
+	header {
+		margin: 0;
+		padding: 0 1em;
+		background: white;
+		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		position: relative;
+		z-index: 100;
+	}
+	h2 {
+		margin: 0;
+		font-size: 1em;
+	}
+	h2 a,
+	h2 a.active {
+		text-decoration: none;
+		display: flex !important;
+		align-items: center;
+		gap: 1rem;
+	}
+	.site-logo {
+		width: 42px;
+		height: 42px;
+		border-radius: 0;
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	nav a, .dropdown-toggle {
+		padding: 1em 0.5em;
+		color: var(--black);
+		border-bottom: 4px solid transparent;
+		text-decoration: none;
+		cursor: pointer;
+		display: inline-block;
+	}
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	.dropdown {
+		position: relative;
+	}
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: white;
+		box-shadow: 0 4px 12px rgba(var(--black), 10%);
+		border-radius: 8px;
+		min-width: 180px;
+		padding: 0.5em 0;
+		z-index: 200;
+	}
+	.dropdown:hover .dropdown-menu {
+		display: block;
+	}
+	.dropdown-menu a {
+		display: block;
+		padding: 0.5em 1em;
+		border-bottom: none;
+	}
+	.dropdown-menu a:hover {
+		background: rgba(var(--gray-light), 50%);
+	}
+	.social-links,
+	.social-links a {
+		display: flex;
+	}
+	@media (max-width: 720px) {
+		.social-links {
+			display: none;
+		}
+		.nav-links {
+			display: none;
+		}
+	}
+</style>

@@ -1,0 +1,10 @@
+{
+  "name": "Giovanni Albero",
+  "bio": null,
+  "avatar": "https://secure.gravatar.com/avatar/55e987f4b5d6b25ae546fb2ca83d43f804ab6160a21857128b6945c137d1706a?s=256&d=mm&r=g",
+  "links": [
+    { "label": "Website", "url": "https://mimir.bot" },
+    { "label": "Instagram", "url": "https://www.instagram.com/mimir_ai_agent/" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/g-albero/" }
+  ]
+}

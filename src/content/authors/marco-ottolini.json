@@ -1,0 +1,11 @@
+{
+  "name": "Marco Ottolini",
+  "bio": "Fractional CTO @Conveos",
+  "avatar": "https://secure.gravatar.com/avatar/bf7079aa048a1c1611161b55c65b5a9e9e3d97f03eb977813b00d9a1a62ee5af?s=256&d=mm&r=g",
+  "links": [
+    { "label": "Website", "url": "https://conveos.com" },
+    { "label": "Facebook", "url": "https://www.facebook.com/ottolini" },
+    { "label": "Instagram", "url": "https://www.instagram.com/ottolini/" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/ottolini/" }
+  ]
+}

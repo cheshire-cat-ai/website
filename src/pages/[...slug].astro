@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../layouts/BlogPost.astro';
+import Page from '../layouts/Page.astro';
+
+export async function getStaticPaths() {
+	const pages = await getCollection('pages');
+	const posts = await getCollection('blog');
+
+	const pagePaths = pages.map((page) => ({
+		params: { slug: page.id },
+		props: { entry: page, type: 'page' as const },
+	}));
+
+	const postPaths = posts.map((post) => ({
+		params: { slug: post.id },
+		props: { entry: post, type: 'post' as const },
+	}));
+
+	return [...pagePaths, ...postPaths];
+}
+
+const { entry, type } = Astro.props;
+const { Content } = await render(entry);
+---
+
+{type === 'page' ? (
+	<Page title={entry.data.title} heroImage={entry.data.heroImage}>
+		<Content />
+	</Page>
+) : (
+	<BlogPost {...entry.data}>
+		<Content />
+	</BlogPost>
+)}

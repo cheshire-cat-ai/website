@@ -1,0 +1,144 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const authors = await getCollection('authors');
+const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.data.name]));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Blog - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 960px;
+			}
+			ul {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 2rem;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			ul li {
+				width: calc(50% - 1rem);
+			}
+			ul li * {
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+			ul li:first-child {
+				width: 100%;
+				margin-bottom: 1rem;
+				text-align: center;
+			}
+			ul li:first-child .thumbnail-container {
+				height: 360px;
+			}
+			ul li:first-child .title {
+				font-size: 2.369rem;
+			}
+			ul li .thumbnail-container {
+				margin-bottom: 0.5rem;
+			}
+			ul li a {
+				display: block;
+			}
+			.title {
+				margin: 0;
+				color: rgb(var(--black));
+				line-height: 1;
+			}
+			.meta {
+				margin: 0.25rem 0 0;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+			}
+			.categories {
+				display: inline;
+			}
+			.categories span {
+				text-transform: capitalize;
+			}
+			ul li a:hover h4,
+			ul li a:hover .meta {
+				color: rgb(var(--accent));
+			}
+			ul a:hover img {
+				box-shadow: var(--box-shadow);
+			}
+			.author-link {
+				display: inline-block;
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				margin-top: 0.25rem;
+			}
+			.author-link:hover {
+				color: var(--accent);
+			}
+			@media (max-width: 720px) {
+				ul {
+					gap: 0.5em;
+				}
+				ul li {
+					width: 100%;
+					text-align: center;
+				}
+				ul li:first-child {
+					margin-bottom: 0;
+				}
+				ul li:first-child .title {
+					font-size: 1.563em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<ul>
+					{
+						posts.map((post) => (
+							<li>
+								<a href={`/${post.id}/`}>
+									{post.data.heroImage && (
+										<div class="thumbnail-container">
+											<Image width={720} height={360} src={post.data.heroImage} alt="" />
+										</div>
+									)}
+									<h4 class="title">{post.data.title}</h4>
+									<p class="meta">
+										<FormattedDate date={post.data.pubDate} />
+									</p>
+									{post.data.categories && (
+										<p class="categories">
+											{post.data.categories.map((cat, i) => (
+												<><span>{cat}</span>{i < post.data.categories.length - 1 && ', '}</>
+											))}
+										</p>
+									)}
+								</a>
+								{post.data.author && authorMap[post.data.author] && (
+									<a href={`/author/${post.data.author}/`} class="author-link">{authorMap[post.data.author]}</a>
+								)}
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
