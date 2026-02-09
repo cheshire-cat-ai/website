@@ -8,6 +8,8 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://cheshirecat.ai',
+    site: 'https://cheshire-cat-ai.github.io',
+    base: '/website/',
+    trailingSlash: 'always',
     integrations: [mdx(), sitemap(), react()],
 });

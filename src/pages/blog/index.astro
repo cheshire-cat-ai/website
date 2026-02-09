@@ -13,6 +13,8 @@ const posts = (await getCollection('blog')).sort(
 
 const authors = await getCollection('authors');
 const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.data.name]));
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -112,7 +114,7 @@ const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.data.name]));
 					{
 						posts.map((post) => (
 							<li>
-								<a href={`/${post.id}/`}>
+								<a href={`${base}${post.id}/`}>
 									{post.data.heroImage && (
 										<div class="thumbnail-container">
 											<Image width={720} height={360} src={post.data.heroImage} alt="" />
@@ -131,7 +133,7 @@ const authorMap = Object.fromEntries(authors.map((a) => [a.id, a.data.name]));
 									)}
 								</a>
 								{post.data.author && authorMap[post.data.author] && (
-									<a href={`/author/${post.data.author}/`} class="author-link">{authorMap[post.data.author]}</a>
+									<a href={`${base}author/${post.data.author}/`} class="author-link">{authorMap[post.data.author]}</a>
 								)}
 							</li>
 						))

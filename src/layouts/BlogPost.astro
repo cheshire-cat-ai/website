@@ -13,6 +13,8 @@ const { title, description, pubDate, updatedDate, heroImage, author, categories 
 
 const authors = await getCollection('authors');
 const authorData = authors.find((a) => a.id === author);
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <html lang="en">
@@ -141,7 +143,7 @@ const authorData = authors.find((a) => a.id === author);
 						<div class="byline">
 							{authorData && (
 								<>
-									<a href={`/author/${author}/`}>{authorData.data.name}</a>
+									<a href={`${base}author/${author}/`}>{authorData.data.name}</a>
 									<span class="separator">&middot;</span>
 								</>
 							)}
@@ -162,7 +164,7 @@ const authorData = authors.find((a) => a.id === author);
 					<slot />
 					{authorData && (
 						<div class="author-card">
-							<a href={`/author/${author}/`} class="author-card-link">
+							<a href={`${base}author/${author}/`} class="author-card-link">
 								{authorData.data.avatar && (
 									<img src={authorData.data.avatar} alt={authorData.data.name} />
 								)}

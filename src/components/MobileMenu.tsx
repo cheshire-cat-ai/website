@@ -2,6 +2,10 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import navigation from '../content/navigation.json';
 import styles from './MobileMenu.module.css';
 
+const base = import.meta.env.BASE_URL;
+const resolveHref = (href: string) =>
+	href.startsWith('/') ? `${base}${href.slice(1)}` : href;
+
 export default function MobileMenu() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
@@ -153,7 +157,7 @@ export default function MobileMenu() {
 									{item.children.map((link) => (
 										<a
 											key={link.href}
-											href={link.href}
+											href={resolveHref(link.href)}
 											{...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 										>
 											{link.label}
@@ -162,7 +166,7 @@ export default function MobileMenu() {
 								</div>
 							</div>
 						) : (
-							<a key={item.href} href={item.href} className={styles.navLink}>
+							<a key={item.href} href={resolveHref(item.href)} className={styles.navLink}>
 								{item.label}
 							</a>
 						)
