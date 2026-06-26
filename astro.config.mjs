@@ -10,5 +10,8 @@ import react from '@astrojs/react';
 export default defineConfig({
     site: 'https://cheshirecat.ai',
     trailingSlash: 'always',
+    redirects: {
+        '/docs': 'https://cheshire-cat-ai.github.io/docs/',
+    },
     integrations: [mdx(), sitemap(), react()],
 });
