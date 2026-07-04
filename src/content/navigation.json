@@ -11,23 +11,7 @@
 		},
 		{ "label": "Services", "href": "/services/" },
 		{ "label": "Use Cases", "href": "/use-cases/" },
-		{
-			"label": "Network",
-			"children": [
-				{ "label": "Partners", "href": "/partners/" },
-				{ "label": "Supporters", "href": "/support-us/" },
-				{ "label": "Ambassadors", "href": "/ambassador-program/" },
-				{ "label": "Events", "href": "/meow-events/" }
-			]
-		},
-		{
-			"label": "About",
-			"children": [
-				{ "label": "Code of Ethics", "href": "/code-of-ethics/" },
-				{ "label": "Code of Conduct", "href": "/code-of-conduct/" },
-				{ "label": "Join Us", "href": "/join-us/" }
-			]
-		}
+		{ "label": "About", "href": "/about/" }
 	],
 	"social": [
 		{
