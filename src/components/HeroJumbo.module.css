@@ -1,37 +1,11 @@
-.jumbo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: 3rem 1rem;
-  text-align: center;
-}
-
 .logo {
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   height: auto;
 }
 
-.tagline {
-  margin-top: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: rgb(var(--black));
-}
-
 @media (max-width: 720px) {
-  .jumbo {
-    min-height: 40vh;
-    padding: 2rem 1rem;
-  }
-
   .logo {
-    max-width: 260px;
-  }
-
-  .tagline {
-    font-size: 1.15rem;
+    max-width: 200px;
   }
 }

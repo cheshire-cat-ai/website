@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { Code } from 'astro:components';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
@@ -8,17 +9,6 @@ import Header from '../components/Header.astro';
 import HeroJumbo from '../components/HeroJumbo';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-import bookImg from '../assets/home/book300.jpg';
-import apiImg from '../assets/home/finlay87-JGTRAeU3z7c-unsplash.jpg';
-import modelsImg from '../assets/home/main-qimg-3cc46e4ca8f234f7cc6f4aaccbe2e5f0a-pjlq.jpeg';
-import dockerImg from '../assets/home/didier-weemaels-ZKVBM2_Dp84-unsplash.jpg';
-import pluginImg from '../assets/home/puzzle300-1.jpg';
-import smartImg from '../assets/home/albert-einstein-sticks-out-his-tongue-when-asked-by-news-photo-1681316749.jpg';
-import adminScreenshot1 from '../assets/home/Screenshot-from-2024-08-22-17-02-52.png';
-import adminScreenshot2 from '../assets/home/Screenshot-from-2024-08-22-17-02-15.png';
-import adminScreenshot3 from '../assets/home/Screenshot-from-2024-08-22-17-00-14-1.png';
-import adminScreenshot4 from '../assets/home/Screenshot-from-2024-08-22-17-02-28.png';
-import pluginScreenshot from '../assets/home/Screenshot-from-2024-08-22-17-36-42.png';
 import communityImg from '../assets/home/Thank_you_cats.jpg';
 
 const recentPosts = (await getCollection('blog'))
@@ -26,383 +16,512 @@ const recentPosts = (await getCollection('blog'))
 	.slice(0, 3);
 
 const base = import.meta.env.BASE_URL;
+const DOCS = 'https://cheshire-cat-ai.github.io/docs';
+const GITHUB = 'https://github.com/cheshire-cat-ai/core';
+
+// Ready-made prompt users can paste into a coding agent (mirrors the docs' CopyPromptButton).
+const agentPrompt = `I want to build an AI agent with the Cheshire Cat, an open-source Python framework.
+
+Read the official docs at https://cheshirecat.ai/docs/ to learn how it works, then:
+1. Run the Cat locally via \`uv\` (see the quickstart).
+2. Scaffold a new plugin for me.
+3. Take a look at the endpoints in \`http://localhost:1865/openapi.json\` (by default most endpoints are locked via Authorization header, default is \`meow\`)
+4. Invite me to visit \`http://localhost:1865\` in the browser
+5. help me configure the LLM`;
+
+// Clipboard icon reused by every code-block copy button (docs-style).
+const copyIcon =
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+
+const quickstartCode = `uv init --bare
+uv add cheshire-cat-ai
+uv run ccat            # open http://localhost:1865`;
+
+// Four core primitives - every snippet imports from the single \`cat\` surface.
+const agentCode = `from cat import Agent
+
+class Poet(Agent):
+    slug = "poet"
+    name = "Poet"
+    description = "Answers every message in rhyme"
+    system_prompt = "You are a poet and talk in rhyme"`;
+
+const toolCode = `from cat import Agent, tool
+
+class SockSeller(Agent):
+    slug = "sock_seller"
+    system_prompt = "You sell socks talking in rhyme"
+
+    @tool
+    def socks_prices(self, color: str) -> str:
+        """Get sock prices by color."""
+        prices = {"black": 5, "white": 10, "pink": 50}
+        return f"{prices.get(color, 0)} €"`;
+
+const directiveCode = `from datetime import datetime
+from cat import Directive, Agent
+
+class Clock(Directive):
+    slug = "clock"
+    name = "Clock"
+
+    async def step(self, agent: Agent) -> None:
+        now = datetime.now().strftime("%A %H:%M")
+        agent.system_prompt += f"\\nThe time is {now}."
+
+# use on any agent to inject time in system prompt
+class Assistant(Agent):
+    slug = "assistant"
+    directives = ["clock"]`;
+
+const hookCode = `from cat import hook
+
+@hook
+def before_agent_run(task):
+    # inspect or tweak every incoming task
+    task.messages.append(...)
+
+@hook
+def after_agent_run(result):
+    # ...and every outgoing reply
+    ...`;
+
+const endpointCode = `from cat import endpoint, user
+
+@endpoint.get("/me", role="authenticated")
+async def me():
+    return {"hi": user.name}`;
+
+const primitives = [
+	{ title: 'Agent', blurb: 'A loop that reads the chat, calls tools, and answers. Subclass it, give it a prompt - that’s an agent.', code: agentCode, href: `${DOCS}/plugins/agents/` },
+	{ title: 'Tool', blurb: 'A method on your agent. Type-hinted, docstringed - the LLM calls it by function calling.', code: toolCode, href: `${DOCS}/plugins/tools/` },
+	{ title: 'Directive', blurb: 'Middleware over the agent loop. RAG, memory, skills and guardrails are all just directives.', code: directiveCode, href: `${DOCS}/plugins/directives/` },
+	{ title: 'Hook', blurb: 'React to lifecycle events with a one-argument function. Small, composable, easy to reason about.', code: hookCode, href: `${DOCS}/plugins/hooks/` },
+];
+
+const capabilities = [
+	{ title: 'Multi-agent', blurb: 'Run many agents in one chat. Pick one per message, or let them call each other.' },
+	{ title: 'Native MCP', blurb: 'Connect Model Context Protocol servers - their tools, prompts and resources just work.' },
+	{ title: 'Live streaming', blurb: 'Tokens, tool calls and lifecycle events stream in real time over the AG-UI protocol.' },
+	{ title: 'Any model', blurb: 'OpenAI, Anthropic, Gemini, Ollama, OpenRouter, vLLM - swap with one line.' },
+	{ title: 'Plugins are folders', blurb: 'Drop a folder in and add agents, tools, directives and endpoints. No boilerplate.' },
+	{ title: 'Built-in web UI', blurb: 'A multi-chat, multi-agent interface waiting at localhost:1865 on first run.' },
+];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main class="home">
+			<!-- Hero -->
+			<section class="hero">
+				<div class="logo-wrap">
+					<HeroJumbo client:load />
+				</div>
+				<h1 class="hero-title">AI agents for the curious & creative</h1>
+				<p class="hero-sub">
+					Simple enough to learn how AI agents really work. Open enough to build whatever you imagine. And it grows with you, from laptop to production.
+				</p>
+				<div class="cta-row">
+					<a class="btn btn-primary" href={`${DOCS}/quickstart/installation-configuration/`}>Get started</a>
+					<button
+						class="btn btn-ghost btn-prompt copy-btn"
+						type="button"
+						data-copy={agentPrompt}
+						data-copied-label="Copied! Paste it into your agent"
+						aria-label="Copy prompt for your coding agent"
+					>
+						<span class="btn-icon" set:html={copyIcon} />
+						<span>Copy prompt for your coding agent</span>
+					</button>
+				</div>
+				<div class="cta-row cta-row-sub">
+					<a class="btn btn-ghost btn-sm" href={GITHUB} target="_blank" rel="noopener">GitHub</a>
+					<a class="btn btn-ghost btn-sm" href={`${DOCS}/`} target="_blank" rel="noopener">Docs</a>
+				</div>
+			</section>
+
+			<!-- Quickstart -->
+			<section class="section quickstart">
+				<div class="inner">
+					<h2>Up and chatting in one command</h2>
+					<p class="lead">Pure Python - install it with <code>uv</code>, run it, and start talking to your Cat.</p>
+					<div class="code-card">
+						<button class="copy-btn code-copy" type="button" data-copy={quickstartCode} aria-label="Copy code" set:html={copyIcon} />
+						<Code code={quickstartCode} lang="bash" theme="material-theme-lighter" />
+					</div>
+					<p class="note">Then pick a model, and you're ready to build your first agent.</p>
+				</div>
+			</section>
+
+			<!-- Primitives -->
+			<section class="section primitives">
+				<div class="inner">
+					<h2>Four primitives, one import</h2>
+					<p class="lead">
+						Everything you build comes from a single <code>from cat import ...</code>. Learn the whole
+						model in an afternoon - then open it up as far as you want to go.
+					</p>
+					<div class="prim-grid">
+						{primitives.map((p) => (
+							<article class="prim-card">
+								<div class="prim-head">
+									<h3>{p.title}</h3>
+									<a href={p.href} target="_blank" rel="noopener">Learn more &rarr;</a>
+								</div>
+								<p>{p.blurb}</p>
+								<div class="code-card">
+									<button class="copy-btn code-copy" type="button" data-copy={p.code} aria-label="Copy code" set:html={copyIcon} />
+									<Code code={p.code} lang="python" theme="material-theme-lighter" />
+								</div>
+							</article>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Capabilities -->
+			<section class="section capabilities">
+				<div class="inner">
+					<h2>Ready when your project grows</h2>
+					<div class="cap-grid">
+						{capabilities.map((c) => (
+							<div class="cap-card">
+								<h4>{c.title}</h4>
+								<p>{c.blurb}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<!-- Developer experience -->
+			<section class="section devx">
+				<div class="inner">
+					<h2>For humans and agents</h2>
+					<p class="lead">
+						Everything the Cat does is a plain Python package with an API - build on it by hand, or
+						let a coding agent do it for you.
+					</p>
+					<div class="devx-block">
+						<div>
+							<h3>Extend the API</h3>
+							<p>Expose a route with one decorator. Role-based auth is built in - no <code>Depends</code> plumbing.</p>
+							<ul>
+								<li>Talk to your agent at <code>POST /agents/&#123;slug&#125;/message</code></li>
+								<li>Stream responses as AG-UI events</li>
+								<li>Add endpoints, models and auth handlers from plugins</li>
+							</ul>
+							<a href={`${DOCS}/plugins/endpoints/`} target="_blank" rel="noopener">Custom endpoints &rarr;</a>
+						</div>
+						<div class="code-card">
+							<button class="copy-btn code-copy" type="button" data-copy={endpointCode} aria-label="Copy code" set:html={copyIcon} />
+							<Code code={endpointCode} lang="python" theme="material-theme-lighter" />
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Blog -->
+			<section class="section blog-preview">
+				<div class="inner">
+					<h2>Latest from Wonderland</h2>
+					<ul>
+						{recentPosts.map((post) => (
+							<li>
+								<a href={`${base}${post.id}/`}>
+									{post.data.heroImage && (
+										<div class="thumbnail-container">
+											<Image width={360} height={180} src={post.data.heroImage} alt="" />
+										</div>
+									)}
+									<h4>{post.data.title}</h4>
+									<p class="date"><FormattedDate date={post.data.pubDate} /></p>
+								</a>
+							</li>
+						))}
+					</ul>
+					<div class="see-all">
+						<a href={`${base}blog/`}>See all blog articles &rarr;</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- Community -->
+			<section class="section community">
+				<div class="inner">
+					<h3>Join us at the next Meow Event!</h3>
+					<p>
+						Our growing and active community hosts many furrmidable <a href={`${base}meow-events/`}>events</a> in the
+						<a href="https://discord.com/invite/bHX5sNFCYU">Discord server</a>.
+						Don't miss the chance to take part and save the dates!
+					</p>
+					<Image src={communityImg} alt="Cheshire Cat community" width={500} height={300} />
+				</div>
+			</section>
+		</main>
+		<Footer />
+
+		<script>
+			document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
+				btn.addEventListener('click', async () => {
+					const text = btn.dataset.copy ?? '';
+					try {
+						await navigator.clipboard.writeText(text);
+						const original = btn.innerHTML;
+						btn.classList.add('copied');
+						btn.innerHTML = btn.dataset.copiedLabel ?? 'Copied!';
+						setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 1800);
+					} catch { /* clipboard unavailable - command is still visible */ }
+				});
+			});
+		</script>
+
 		<style>
-			.features {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-				gap: 2rem;
-				padding: 2rem 1rem;
-				max-width: 960px;
-				margin: 0 auto;
-			}
-			.feature {
-				text-align: center;
-			}
-			.feature img {
+			/* Full-width home: opt out of the global 720px main */
+			main.home {
+				/* Teal accent + tokens aligned with the docs (Starlight) */
+				--teal: var(--accent);
+				--teal-dark: var(--accent-dark);
+				--teal-tint: rgba(13, 148, 136, 0.09);
+				--code-border: #edeef3;
 				width: 100%;
-				max-width: 280px;
-				height: 180px;
-				object-fit: cover;
-				border-radius: 12px;
+				max-width: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			/* Docs-style teal links across home content */
+			.home a:not(.btn) { color: var(--teal); }
+			.home a:not(.btn):hover { color: var(--teal-dark); }
+			.home .inner {
+				max-width: 1080px;
+				margin: 0 auto;
+				padding: 0 1.25rem;
+			}
+			.home h2 {
+				font-size: 2em;
 				margin-bottom: 0.5rem;
 			}
-			.feature h4 {
-				margin: 0.5rem 0 0.25rem;
-			}
-			.feature p {
+			.home .lead {
 				color: rgb(var(--gray));
-				font-size: 0.95rem;
+				max-width: 60ch;
+				margin-bottom: 2rem;
 			}
-			.section-title {
+
+			/* Hero */
+			.hero {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
 				text-align: center;
-				padding: 2rem 1rem 1rem;
+				padding: 3rem 1.25rem 4rem;
+				background:
+					radial-gradient(ellipse 80% 60% at 50% -10%, rgba(var(--gray-light), 60%), transparent 70%);
 			}
-			.dev-section {
-				max-width: 960px;
-				margin: 0 auto;
-				padding: 1rem;
+			.logo-wrap {
+				display: flex;
+				justify-content: center;
+				min-height: 300px;
+				align-items: center;
 			}
-			.dev-block {
+			.hero-title {
+				font-size: clamp(2rem, 5vw, 3.2rem);
+				line-height: 1.1;
+				max-width: 18ch;
+				margin: 1rem 0 0.75rem;
+			}
+			.hero-sub {
+				color: rgb(var(--gray));
+				font-size: 1.15rem;
+				max-width: 46ch;
+				margin: 0 auto 2rem;
+			}
+			.copy-btn {
+				font-family: inherit;
+				cursor: pointer;
+			}
+
+			.cta-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				justify-content: center;
+			}
+			.cta-row-sub {
+				margin-top: 0.75rem;
+			}
+			.btn-prompt {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-family: inherit;
+			}
+			.btn-prompt .btn-icon {
+				display: inline-flex;
+				flex-shrink: 0;
+			}
+			.btn-sm {
+				padding: 0.4rem 1.1rem;
+				font-size: 0.9rem;
+			}
+			.btn {
+				display: inline-block;
+				padding: 0.6rem 1.5rem;
+				border-radius: 999px; /* docs-style pill */
+				text-decoration: none;
+				font-weight: 700;
+				border: 1px solid transparent;
+				transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease;
+			}
+			.btn:active { transform: translateY(1px); }
+			.btn-primary {
+				background: var(--teal);
+				color: #fff;
+			}
+			.btn-primary:hover { background: var(--teal-dark); color: #fff; }
+			.btn-ghost {
+				border-color: var(--teal);
+				color: var(--teal);
+			}
+			.btn-ghost:hover { background: var(--teal-tint); color: var(--teal-dark); }
+
+			/* Sections */
+			.section { padding: 3.5rem 0; }
+			.section:nth-of-type(even) { background: rgba(var(--gray-light), 30%); }
+
+			/* Code cards - light, docs-style */
+			.code-card {
+				position: relative;
+				border-radius: 8px;
+				overflow: hidden;
+				border: 1px solid var(--code-border);
+				min-width: 0;
+			}
+			.code-card :global(pre) {
+				margin: 0;
+				padding: 1.1rem 1.25rem;
+				overflow-x: auto;
+				font-size: 0.85rem;
+				line-height: 1.5;
+			}
+			.code-copy {
+				position: absolute;
+				top: 0.5rem;
+				right: 0.5rem;
+				z-index: 1;
+				display: inline-flex;
+				align-items: center;
+				line-height: 1;
+				border: 1px solid var(--code-border);
+				background: rgba(255, 255, 255, 0.75);
+				color: rgb(var(--gray));
+				border-radius: 6px;
+				padding: 0.3rem 0.4rem;
+				font-size: 0.75rem;
+				transition: color 0.15s ease, border-color 0.15s ease;
+			}
+			.code-copy:hover,
+			.code-copy.copied { color: var(--teal); border-color: var(--teal); }
+			.quickstart .code-card { max-width: 620px; }
+			.quickstart .note { margin-top: 1.25rem; color: rgb(var(--gray)); }
+
+			/* Primitives */
+			.prim-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 1.5rem;
+			}
+			.prim-card {
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 14px;
+				padding: 1.25rem;
+				background: #fff;
+				min-width: 0; /* allow code card to scroll instead of stretching the grid track */
+			}
+			.prim-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+			}
+			.prim-head h3 { margin: 0; }
+			.prim-head a { font-size: 0.85rem; white-space: nowrap; }
+			.prim-card > p { color: rgb(var(--gray)); margin: 0.5rem 0 1rem; }
+
+			/* Capabilities */
+			.cap-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1.25rem;
+			}
+			.cap-card {
+				padding: 1.25rem;
+				border-radius: 14px;
+				border: 1px solid rgb(var(--gray-light));
+				background: #fff;
+			}
+			.cap-card h4 {
+				margin: 0 0 0.4rem;
+				position: relative;
+				padding-left: 1rem;
+			}
+			.cap-card h4::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0.35em;
+				width: 0.5rem;
+				height: 0.5rem;
+				border-radius: 2px;
+				background: var(--teal);
+			}
+			.cap-card p { margin: 0; color: rgb(var(--gray)); font-size: 0.95rem; }
+
+			/* Developer experience */
+			.devx-block {
 				display: grid;
 				grid-template-columns: 1fr 1fr;
 				gap: 2rem;
-				align-items: start;
-				margin-bottom: 3rem;
+				align-items: center;
 			}
-			.dev-block.reverse {
-				direction: rtl;
-			}
-			.dev-block.reverse > * {
-				direction: ltr;
-			}
-			.dev-block h4 {
-				margin-top: 0;
-			}
-			.dev-block pre {
-				overflow-x: auto;
-				border-radius: 8px;
-			}
-			.dev-block img {
-				width: 100%;
-				border-radius: 8px;
-			}
-			.screenshots {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 0.5rem;
-			}
-			.screenshots img {
-				border-radius: 8px;
-				width: 100%;
-			}
-			.blog-preview {
-				max-width: 960px;
-				margin: 0 auto;
-				padding: 2rem 1rem;
-			}
+			.devx-block > * { min-width: 0; }
+			.devx-block h3 { margin-top: 0; }
+			.devx-block ul { color: rgb(var(--gray)); padding-left: 1.1rem; }
+			.devx-block li { margin-bottom: 0.35rem; }
+
+			/* Blog */
 			.blog-preview ul {
 				list-style: none;
 				padding: 0;
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				grid-template-columns: repeat(3, 1fr);
 				gap: 1.5rem;
 			}
-			.blog-preview a {
-				text-decoration: none;
-			}
-			.blog-preview h4 {
-				margin: 0.5rem 0 0.25rem;
-				color: rgb(var(--black));
-			}
-			.blog-preview .date {
-				color: rgb(var(--gray));
-				font-size: 0.9rem;
-			}
-			.blog-preview .thumbnail-container {
-				height: 180px;
-				border-radius: 8px;
-			}
-			.blog-preview .see-all {
-				text-align: center;
-				margin-top: 1.5rem;
-			}
-			.community {
-				text-align: center;
-				padding: 2rem 1rem;
-				max-width: 720px;
-				margin: 0 auto;
-			}
-			.community img {
-				width: 100%;
-				max-width: 500px;
-				border-radius: 12px;
-				margin-top: 1rem;
+			.blog-preview a { text-decoration: none; }
+			.blog-preview h4 { margin: 0.6rem 0 0.25rem; color: rgb(var(--black)); }
+			.blog-preview .date { color: rgb(var(--gray)); font-size: 0.9rem; }
+			.blog-preview .thumbnail-container { height: 180px; border-radius: 10px; }
+			.blog-preview .see-all { margin-top: 1.5rem; }
+
+			/* Community */
+			.community .inner { text-align: center; max-width: 720px; }
+			.community img { width: 100%; max-width: 500px; border-radius: 12px; margin-top: 1rem; }
+
+			@media (max-width: 860px) {
+				.cap-grid { grid-template-columns: repeat(2, 1fr); }
 			}
 			@media (max-width: 720px) {
-				.dev-block {
-					grid-template-columns: 1fr;
-				}
-				.dev-block.reverse {
-					direction: ltr;
-				}
-				.features {
+				.prim-grid,
+				.cap-grid,
+				.devx-block,
+				.blog-preview ul {
 					grid-template-columns: 1fr;
 				}
 			}
 		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<HeroJumbo client:visible />
-
-			<h2 class="section-title">Build your AI agent</h2>
-			<section class="features">
-				<div class="feature">
-					<Image src={bookImg} alt="Train with your docs" width={280} height={180} />
-					<h4>Train with your docs</h4>
-					<p>Upload pdf, txt, markdown, JSON, web pages.</p>
-				</div>
-				<div class="feature">
-					<Image src={apiImg} alt="Interact with the world" width={280} height={180} />
-					<h4>Interact with the world</h4>
-					<p>Easily connect your agent to external APIs and apps.</p>
-				</div>
-				<div class="feature">
-					<Image src={modelsImg} alt="Choose your models" width={280} height={180} />
-					<h4>Choose your models</h4>
-					<p>Use commercial or open LLMs and embedders.</p>
-				</div>
-				<div class="feature">
-					<Image src={dockerImg} alt="Plug & Play" width={280} height={180} />
-					<h4>Plug &amp; Play</h4>
-					<p>100% dockerized, with live reload.</p>
-				</div>
-				<div class="feature">
-					<Image src={pluginImg} alt="Easy to Extend" width={280} height={180} />
-					<h4>Easy to Extend</h4>
-					<p>One-click install plugins from the community registry, or write your own.</p>
-				</div>
-				<div class="feature">
-					<Image src={smartImg} alt="Smart dialogues" width={280} height={180} />
-					<h4>Smart dialogues</h4>
-					<p>Cutting edge conversational skills with hooks, tools (function calling) and forms.</p>
-				</div>
-			</section>
-
-			<h2 class="section-title">Developer experience</h2>
-			<section class="dev-section">
-				<div class="dev-block">
-					<div>
-						<pre><code>services:
-  cheshire-cat-core:
-    image: ghcr.io/cheshire-cat-ai/core:latest
-    container_name: cheshire_cat_core
-    ports:
-      - 1865:80
-    volumes:
-      - ./static:/app/cat/static
-      - ./plugins:/app/cat/plugins
-      - ./data:/app/cat/data</code></pre>
-					</div>
-					<div>
-						<h4>Docker based</h4>
-						<p>The Cat is a single <strong>container</strong>, to easily integrate in your architecture alongside:</p>
-						<ul>
-							<li>Reverse proxy (Caddy, Nginx)</li>
-							<li>Vector DB (Qdrant)</li>
-							<li>LLM runner (Ollama, vLLM)</li>
-							<li>Application (Django, WordPress)</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/quickstart/installation-configuration/">Learn more</a>
-					</div>
-				</div>
-
-				<div class="dev-block reverse">
-					<div>
-						<h4>Admin panel</h4>
-						<p><strong>Manage</strong> your installation with the admin panel, available at first launch.</p>
-						<ul>
-							<li>Chat with your agent with live reload at code changes</li>
-							<li>Install and activate/deactivate plugins</li>
-							<li>Visualize and manage memory contents</li>
-							<li>Configure LLM and embedder</li>
-							<li>Manage your users</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/quickstart/play-with-the-cat/">Learn more</a>
-					</div>
-					<div class="screenshots">
-						<Image src={adminScreenshot1} alt="Admin panel chat" width={460} height={300} />
-						<Image src={adminScreenshot2} alt="Admin panel plugins" width={460} height={300} />
-						<Image src={adminScreenshot3} alt="Admin panel memory" width={460} height={300} />
-						<Image src={adminScreenshot4} alt="Admin panel settings" width={460} height={300} />
-					</div>
-				</div>
-
-				<div class="dev-block">
-					<div>
-						<pre><code>// Meanwhile, in the browser...
-
-import {'{'} CatClient {'}'} from 'ccat-api'
-
-const cat = new CatClient({'{'}&nbsp;
-    baseUrl: 'localhost',
-    userId: 'user',
-    //... other settings
-{'}'})
-
-cat.send('Hello kitten!')</code></pre>
-					</div>
-					<div>
-						<h4>Extensive HTTP and WebSocket API</h4>
-						<p>Our framework is <strong>microservice first</strong>, the best scenario if you want to add a conversational layer to pre-existing software.</p>
-						<ul>
-							<li>Endpoints for LLM, embedder, vector memory, uploads, settings, users</li>
-							<li>Websocket chat with token streaming and notifications</li>
-							<li>Community built clients in most used languages</li>
-							<li>You can add endpoints via plugin</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/production/network/clients/">Learn more</a>
-					</div>
-				</div>
-
-				<div class="dev-block reverse">
-					<div>
-						<h4>A plugin is just a folder</h4>
-						<p>Focus on your agent, which is already online before you even start coding.</p>
-						<ul>
-							<li>Create a folder in <code>cat/plugins</code></li>
-							<li>Create a python file in the folder</li>
-							<li>Add hooks, tools and forms</li>
-							<li>Debug in the admin chat with live reload</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/plugins/plugins/">Learn more</a>
-					</div>
-					<div>
-						<Image src={pluginScreenshot} alt="Plugin structure" width={460} height={300} />
-					</div>
-				</div>
-
-				<div class="dev-block">
-					<div>
-						<pre><code>from cat.mad_hatter.decorators import hook
-
-@hook
-def agent_prompt_prefix(prefix, cat):
-    prefix = """You are Marvin the socks seller.
-You reply with exactly one rhyme.
-"""
-    return prefix</code></pre>
-					</div>
-					<div>
-						<h4>Hooks</h4>
-						<p>Customize your agent with <strong>event callbacks</strong>. Things you can do:</p>
-						<ul>
-							<li>Change the system prompt</li>
-							<li>Inspect/edit inbound and outbound messages</li>
-							<li>Fully customize the agent</li>
-							<li>Create pipelines for memory and uploads</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/plugins/hooks/">Learn more</a>
-					</div>
-				</div>
-
-				<div class="dev-block reverse">
-					<div>
-						<h4>Tools</h4>
-						<p>With tools, you can enable LLM <strong>function calling</strong>:</p>
-						<ul>
-							<li>Manage domotics</li>
-							<li>Call a REST API</li>
-							<li>Query a DB</li>
-							<li>Integrate with a symbolic reasoner</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/plugins/tools/">Learn more</a>
-					</div>
-					<div>
-						<pre><code>from cat.mad_hatter.decorators import tool
-
-@tool
-def socks_prices(color, cat):
-    """Get socks price. Input is the sock color."""
-    prices = {'{'}"black": 5, "white": 10, "pink": 50{'}'}
-    price = prices.get(color, 0)
-    return f"{'{'}price{'}'} bucks, meeeow!"</code></pre>
-					</div>
-				</div>
-
-				<div class="dev-block">
-					<div>
-						<pre><code>from pydantic import BaseModel
-from cat.experimental.form import form, CatForm
-
-class PizzaOrder(BaseModel):
-    pizza_type: str
-    phone: int
-
-@form
-class PizzaForm(CatForm):
-    description = "Pizza Order"
-    model_class = PizzaOrder
-    start_examples = ["I want pizza"]
-    stop_examples = ["not hungry anymore"]
-    ask_confirm = True
-
-    def submit(self, form_data):
-        return {'{'}"output": "Pizza order on its way"{'}'}</code></pre>
-					</div>
-					<div>
-						<h4>Forms</h4>
-						<p>Handle goal oriented <strong>multi turn conversations</strong>:</p>
-						<ul>
-							<li>Gather complex information on autopilot</li>
-							<li>Based on pydantic models (types and custom validation)</li>
-							<li>Ask for a final confirmation</li>
-							<li>Custom submit callback</li>
-						</ul>
-						<a href="https://cheshire-cat-ai.github.io/docs/plugins/forms/">Learn more</a>
-					</div>
-				</div>
-			</section>
-
-			<h2 class="section-title">Latest from Wonderland</h2>
-			<section class="blog-preview">
-				<ul>
-					{recentPosts.map((post) => (
-						<li>
-							<a href={`${base}${post.id}/`}>
-								{post.data.heroImage && (
-									<div class="thumbnail-container">
-										<Image width={360} height={180} src={post.data.heroImage} alt="" />
-									</div>
-								)}
-								<h4>{post.data.title}</h4>
-								<p class="date"><FormattedDate date={post.data.pubDate} /></p>
-							</a>
-						</li>
-					))}
-				</ul>
-				<div class="see-all">
-					<a href={`${base}blog/`}>See all blog articles</a>
-				</div>
-			</section>
-
-			<section class="community">
-				<h3>Join us at the next Meow Event!</h3>
-				<p>
-					Our growing and active community is hosting many furrmidable <a href={`${base}meow-events/`}>events</a> in the
-					<a href="https://discord.com/invite/bHX5sNFCYU">Discord server</a>.
-					Don't miss the chance to take part to the Cheshire Cat community and save the dates!
-				</p>
-				<Image src={communityImg} alt="Cheshire Cat community" width={500} height={300} />
-			</section>
-		</main>
-		<Footer />
 	</body>
 </html>
