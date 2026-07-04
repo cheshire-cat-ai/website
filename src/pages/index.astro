@@ -152,7 +152,7 @@ const capabilities = [
 					<p class="lead">Pure Python - install it with <code>uv</code>, run it, and start talking to your Cat.</p>
 					<div class="code-card">
 						<button class="copy-btn code-copy" type="button" data-copy={quickstartCode} aria-label="Copy code" set:html={copyIcon} />
-						<Code code={quickstartCode} lang="bash" theme="material-theme-lighter" />
+						<Code code={quickstartCode} lang="bash" theme="material-theme-darker" />
 					</div>
 					<p class="note">Then pick a model, and you're ready to build your first agent.</p>
 				</div>
@@ -176,7 +176,7 @@ const capabilities = [
 								<p>{p.blurb}</p>
 								<div class="code-card">
 									<button class="copy-btn code-copy" type="button" data-copy={p.code} aria-label="Copy code" set:html={copyIcon} />
-									<Code code={p.code} lang="python" theme="material-theme-lighter" />
+									<Code code={p.code} lang="python" theme="material-theme-darker" />
 								</div>
 							</article>
 						))}
@@ -220,7 +220,7 @@ const capabilities = [
 						</div>
 						<div class="code-card">
 							<button class="copy-btn code-copy" type="button" data-copy={endpointCode} aria-label="Copy code" set:html={copyIcon} />
-							<Code code={endpointCode} lang="python" theme="material-theme-lighter" />
+							<Code code={endpointCode} lang="python" theme="material-theme-darker" />
 						</div>
 					</div>
 				</div>
@@ -304,7 +304,7 @@ const capabilities = [
 			}
 			.home h2 {
 				font-size: 2em;
-				margin-bottom: 0.5rem;
+				margin-bottom: 1.5rem;
 			}
 			.home .lead {
 				color: rgb(var(--gray));
@@ -392,13 +392,15 @@ const capabilities = [
 			/* Sections */
 			.section { padding: 3.5rem 0; }
 			.section:nth-of-type(even) { background: rgba(var(--gray-light), 30%); }
+			/* Primitives cards carry the gray fill, so the section stays white */
+			.section.primitives { background: #fff; }
 
-			/* Code cards - light, docs-style */
+			/* Code cards - dark */
 			.code-card {
 				position: relative;
 				border-radius: 8px;
 				overflow: hidden;
-				border: 1px solid var(--code-border);
+				border: 1px solid rgba(255, 255, 255, 0.08);
 				min-width: 0;
 			}
 			.code-card :global(pre) {
@@ -416,9 +418,9 @@ const capabilities = [
 				display: inline-flex;
 				align-items: center;
 				line-height: 1;
-				border: 1px solid var(--code-border);
-				background: rgba(255, 255, 255, 0.75);
-				color: rgb(var(--gray));
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: rgba(0, 0, 0, 0.35);
+				color: rgba(255, 255, 255, 0.7);
 				border-radius: 6px;
 				padding: 0.3rem 0.4rem;
 				font-size: 0.75rem;
@@ -433,14 +435,18 @@ const capabilities = [
 			.prim-grid {
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
-				gap: 1.5rem;
+				gap: 2.5rem 2rem;
 			}
 			.prim-card {
-				border: 1px solid rgb(var(--gray-light));
+				background: rgba(var(--gray-light), 30%);
 				border-radius: 14px;
 				padding: 1.25rem;
-				background: #fff;
 				min-width: 0; /* allow code card to scroll instead of stretching the grid track */
+			}
+			/* Give the narrow two-column snippets as much horizontal room as possible */
+			.primitives .code-card :global(pre) {
+				padding: 0.9rem 0.85rem;
+				font-size: 0.8rem;
 			}
 			.prim-head {
 				display: flex;
