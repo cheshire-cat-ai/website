@@ -207,7 +207,7 @@ You can play around freely with hooks, tools and document uploads. When you want
 
 - [technical documentation](https://cheshire-cat-ai.github.io/docs/)
 
-- [discord server](https://discord.gg/bHX5sNFCYU)
+- [GitHub Discussions](https://github.com/cheshire-cat-ai/core/discussions)
 
 If you want to have the best dev experience, you could consider exploring how to use the GitHub [repository template](https://cheshirecat.ai/creating-a-plugin-repository/) to develop your next plugin.
 

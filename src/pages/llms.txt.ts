@@ -2,7 +2,7 @@ import { SITE_TITLE } from '../consts';
 
 const DOCS = 'https://cheshire-cat-ai.github.io/docs';
 const GITHUB = 'https://github.com/cheshire-cat-ai/core';
-const DISCORD = 'https://discord.com/invite/bHX5sNFCYU';
+const DISCUSSIONS = 'https://github.com/cheshire-cat-ai/core/discussions';
 
 // Ready-made prompt users (and agents) can paste into a coding agent.
 // Kept in sync with the hero's "Copy prompt for your coding agent" button.
@@ -61,7 +61,7 @@ ${agentPrompt}
 
 - Docs: https://cheshirecat.ai/docs/
 - GitHub: ${GITHUB}
-- Discord community: ${DISCORD}
+- Community discussions: ${DISCUSSIONS}
 `;
 
 	return new Response(body, {

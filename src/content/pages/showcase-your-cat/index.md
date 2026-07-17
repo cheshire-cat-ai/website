@@ -12,6 +12,6 @@ We can start not only to showcase these beautiful projects, but also to network 
 There is no need to suffer the new AI wave as corporation fan boys.  
 Let's be protagonists!
 
-Contact us [in the discord](https://discord.gg/bHX5sNFCYU) if you are interested :D
+Contact us [in the GitHub Discussions](https://github.com/cheshire-cat-ai/core/discussions) if you are interested :D
 
 P.S.: try our [media kit](https://cheshirecat.ai/media-kit/)!
